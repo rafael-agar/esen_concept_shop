@@ -26,6 +26,8 @@ interface CartContextType {
   cartCount: number;
   shippingCost: number;
   finalTotal: number;
+  baseShippingCost: number;
+  setBaseShippingCost: (amount: number) => void;
   
   // Coupon & Admin Logic
   discountAmount: number;
@@ -52,6 +54,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     { code: 'BIENVENIDA20', discountPercentage: 20, isActive: true }
   ]);
   const [freeShippingThreshold, setFreeShippingThreshold] = useState(100);
+  const [baseShippingCost, setBaseShippingCost] = useState(6);
   const [appliedCoupon, setAppliedCoupon] = useState<Coupon | null>(null);
 
   const addToCart = (product: Product, color?: string, size?: string) => {
@@ -120,16 +123,18 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  const cartTotal = cart.reduce((total, item) => total + item.price * item.quantity, 0);
+  const cartTotal = cart.reduce((total, item) => {
+    const itemPrice = item.isSale && item.salePrice ? item.salePrice : item.price;
+    return total + itemPrice * item.quantity;
+  }, 0);
   const cartCount = cart.reduce((count, item) => count + item.quantity, 0);
 
   const discountAmount = appliedCoupon ? (cartTotal * (appliedCoupon.discountPercentage / 100)) : 0;
   const subtotalAfterDiscount = cartTotal - discountAmount;
 
   // Shipping Logic
-  // Base cost: $6
   // Free if: 3 or more items OR subtotalAfterDiscount >= freeShippingThreshold
-  const shippingCost = (cartCount >= 3 || subtotalAfterDiscount >= freeShippingThreshold) ? 0 : 6;
+  const shippingCost = (cartCount >= 3 || subtotalAfterDiscount >= freeShippingThreshold) ? 0 : baseShippingCost;
   
   const finalTotal = subtotalAfterDiscount + shippingCost;
 
@@ -155,7 +160,9 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       toggleCouponStatus,
       deleteCoupon,
       freeShippingThreshold,
-      setFreeShippingThreshold
+      setFreeShippingThreshold,
+      baseShippingCost,
+      setBaseShippingCost
     }}>
       {children}
     </CartContext.Provider>

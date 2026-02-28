@@ -5,6 +5,7 @@ import CartSidebar from './components/CartSidebar';
 import Footer from './components/Footer';
 import { CartProvider } from './context/CartContext';
 import { AuthProvider } from './context/AuthContext';
+import { ProductProvider } from './context/ProductContext';
 import Home from './pages/Home';
 import Shop from './pages/Shop';
 import ProductDetail from './pages/ProductDetail';
@@ -43,9 +44,11 @@ function AppContent() {
 export default function App() {
   return (
     <AuthProvider>
-      <CartProvider>
-        <AppContent />
-      </CartProvider>
+      <ProductProvider>
+        <CartProvider>
+          <AppContent />
+        </CartProvider>
+      </ProductProvider>
     </AuthProvider>
   );
 }

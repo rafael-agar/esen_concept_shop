@@ -89,7 +89,13 @@ export default function CartSidebar() {
                           {item.selectedColor && <span className="mr-2">Color: {item.selectedColor}</span>}
                           {item.selectedSize && <span>Talla: {item.selectedSize}</span>}
                         </p>
-                        <p className="text-sm text-gray-500 mt-1">${item.price.toFixed(2)}</p>
+                        <p className="text-sm text-gray-500 mt-1">
+                          {item.isSale && item.salePrice ? (
+                            <span className="font-bold text-red-500">${item.salePrice.toFixed(2)}</span>
+                          ) : (
+                            <span>${item.price.toFixed(2)}</span>
+                          )}
+                        </p>
                       </div>
                       <div className="flex items-center justify-between">
                         <div className="flex items-center border border-gray-200">

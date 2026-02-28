@@ -1,10 +1,12 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { products, categories } from '../data/products';
+import { categories } from '../data/products';
+import { useProducts } from '../context/ProductContext';
 import ProductCard from '../components/ProductCard';
 import { Filter, ChevronDown } from 'lucide-react';
 import { useSearchParams } from 'react-router-dom';
 
 export default function Shop() {
+  const { products } = useProducts();
   const [searchParams, setSearchParams] = useSearchParams();
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [priceRange, setPriceRange] = useState<{ min: number; max: number }>({ min: 0, max: 1000 });
@@ -86,7 +88,7 @@ export default function Shop() {
           <div className="sticky top-24 space-y-8">
             {/* Categories */}
             <div>
-              <h3 className="font-bold uppercase tracking-widest mb-4 text-sm border-b border-gray-200 pb-2">Categorías</h3>
+              <h3 className="font-bold uppercase tracking-widest mb-4 text-sm border-b border-gray-200 pb-2">Cápsulas</h3>
               <ul className="space-y-2">
                 <li>
                   <button 

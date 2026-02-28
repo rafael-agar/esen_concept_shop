@@ -1,11 +1,14 @@
 import React from 'react';
 import Hero from '../components/Hero';
 import ProductCard from '../components/ProductCard';
-import { products, categories } from '../data/products';
+import { categories } from '../data/products';
+import { useProducts } from '../context/ProductContext';
 import { motion } from 'motion/react';
 import { Link } from 'react-router-dom';
 
 export default function Home() {
+  const { products } = useProducts();
+
   return (
     <>
       <Hero />
@@ -13,7 +16,7 @@ export default function Home() {
       {/* Categories Section */}
       <section className="py-20 px-4 max-w-7xl mx-auto">
         <div className="text-center mb-12">
-          <h2 className="text-3xl font-serif font-bold mb-4">Categorías</h2>
+          <h2 className="text-3xl font-serif font-bold mb-4">Cápsulas</h2>
           <div className="w-12 h-0.5 bg-black mx-auto"></div>
         </div>
         
@@ -100,7 +103,7 @@ export default function Home() {
             />
           </div>
           <div className="order-1 md:order-2 md:pl-12">
-            <h2 className="text-3xl font-serif font-bold mb-6">Sobre Nosotros</h2>
+            <h2 className="text-3xl font-serif font-bold mb-6">Sobre Mí</h2>
             <p className="text-gray-600 mb-6 leading-relaxed">
               ESEN CONCEPT nace desde un proceso de transformación personal, de volver a la raíz, de aprender a sostenerme, de sanar, de confiar.
               Es recordar quién eras antes del ruido, antes del miedo, antes de convertirte en una versión que no se sentía propia.

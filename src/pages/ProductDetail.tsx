@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { products, Product } from '../data/products';
+import { Product } from '../data/products';
+import { useProducts } from '../context/ProductContext';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import { Star, Minus, Plus, ChevronDown, ChevronUp, X, Heart } from 'lucide-react';
@@ -10,6 +11,7 @@ import ProductCard from '../components/ProductCard';
 export default function ProductDetail() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const { products } = useProducts();
   const product = products.find(p => p.id === Number(id));
   const { addToCart } = useCart();
   const { toggleFavorite, isFavorite, isAuthenticated } = useAuth();
@@ -167,9 +169,13 @@ export default function ProductDetail() {
           </p>
 
           <div className="flex items-center gap-4 mb-8">
-            <span className="text-2xl font-bold">${product.price.toFixed(2)}</span>
-            {product.isSale && (
-              <span className="text-xl text-gray-400 line-through">${(product.price * 1.2).toFixed(2)}</span>
+            {product.isSale && product.salePrice ? (
+              <>
+                <span className="text-2xl font-bold text-red-500">${product.salePrice.toFixed(2)}</span>
+                <span className="text-xl text-gray-400 line-through">${product.price.toFixed(2)}</span>
+              </>
+            ) : (
+              <span className="text-2xl font-bold">${product.price.toFixed(2)}</span>
             )}
           </div>
 

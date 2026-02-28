@@ -83,7 +83,7 @@ export default function Navbar() {
                 <button 
                   className="flex items-center text-sm font-medium text-gray-700 hover:text-black transition-colors uppercase tracking-wide focus:outline-none"
                 >
-                  Colecciones <ChevronDown size={14} className="ml-1" />
+                  Cápsulas <ChevronDown size={14} className="ml-1" />
                 </button>
                 
                 <AnimatePresence>
@@ -109,7 +109,7 @@ export default function Navbar() {
                 </AnimatePresence>
               </div>
 
-              <Link to="/about" className="text-sm font-medium text-gray-700 hover:text-black transition-colors uppercase tracking-wide">Nosotros</Link>
+              <Link to="/about" className="text-sm font-medium text-gray-700 hover:text-black transition-colors uppercase tracking-wide">Sobre Mí</Link>
             </div>
 
             {/* Icons */}
@@ -205,7 +205,7 @@ export default function Navbar() {
                 <Link to="/shop" onClick={() => setIsMobileMenuOpen(false)} className="block px-3 py-2 text-base font-medium text-gray-700 hover:text-black hover:bg-gray-50">TIENDA</Link>
                 
                 <div className="px-3 py-2">
-                  <span className="block text-base font-medium text-gray-900 mb-2">COLECCIONES</span>
+                  <span className="block text-base font-medium text-gray-900 mb-2">CÁPSULAS</span>
                   <div className="pl-4 space-y-2 border-l-2 border-gray-100">
                     {categories.map((category) => (
                       <Link 
@@ -220,7 +220,7 @@ export default function Navbar() {
                   </div>
                 </div>
 
-                <Link to="/about" onClick={() => setIsMobileMenuOpen(false)} className="block px-3 py-2 text-base font-medium text-gray-700 hover:text-black hover:bg-gray-50">NOSOTROS</Link>
+                <Link to="/about" onClick={() => setIsMobileMenuOpen(false)} className="block px-3 py-2 text-base font-medium text-gray-700 hover:text-black hover:bg-gray-50">SOBRE MÍ</Link>
               </div>
             </motion.div>
           )}

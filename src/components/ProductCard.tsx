@@ -75,7 +75,16 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         
         <div className="text-center">
           <h3 className="text-sm font-medium text-gray-900 mb-1 group-hover:text-gray-600 transition-colors">{product.name}</h3>
-          <p className="text-sm text-gray-500 font-serif italic">${product.price.toFixed(2)}</p>
+          <p className="text-sm text-gray-500 font-serif italic">
+            {product.isSale && product.salePrice ? (
+              <>
+                <span className="line-through mr-2">${product.price.toFixed(2)}</span>
+                <span className="text-red-500 font-bold">${product.salePrice.toFixed(2)}</span>
+              </>
+            ) : (
+              <span>${product.price.toFixed(2)}</span>
+            )}
+          </p>
         </div>
       </Link>
     </motion.div>

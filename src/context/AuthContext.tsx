@@ -19,6 +19,12 @@ export interface Order {
   status: 'Pendiente' | 'Procesando' | 'Enviado' | 'Entregado';
   items: CartItem[];
   paymentMethod: 'pago-movil' | 'transferencia';
+  isGift?: boolean;
+  giftDetails?: {
+    recipientName: string;
+    recipientEmail: string;
+    message: string;
+  };
 }
 
 interface AuthContextType {

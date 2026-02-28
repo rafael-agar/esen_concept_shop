@@ -27,7 +27,11 @@ export default function Checkout() {
     depositorName: '',
     depositorId: '',
     bank: '',
-    referenceNumber: ''
+    referenceNumber: '',
+    isGift: false,
+    recipientName: '',
+    recipientEmail: '',
+    giftMessage: ''
   });
 
   useEffect(() => {
@@ -47,9 +51,10 @@ export default function Checkout() {
     }
   }, [isAuthenticated, user, navigate, location]);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+    const { name, value, type } = e.target as HTMLInputElement;
+    const val = type === 'checkbox' ? (e.target as HTMLInputElement).checked : value;
+    setFormData(prev => ({ ...prev, [name]: val }));
   };
 
   const handleApplyCoupon = (e: React.FormEvent) => {
@@ -75,17 +80,18 @@ export default function Checkout() {
       addOrder({
         total: finalTotal,
         items: cart,
-        paymentMethod
+        paymentMethod,
+        isGift: formData.isGift,
+        giftDetails: formData.isGift ? {
+          recipientName: formData.recipientName,
+          recipientEmail: formData.recipientEmail,
+          message: formData.giftMessage
+        } : undefined
       });
 
       setIsProcessing(false);
       setIsSuccess(true);
       clearCart();
-      
-      // Redirect to home after success message
-      setTimeout(() => {
-        navigate('/');
-      }, 5000);
     }, 2000);
   };
 
@@ -122,7 +128,12 @@ export default function Checkout() {
         <p className="text-gray-500 mb-8">
           Hemos recibido tu pedido correctamente. En las próximas 24 horas nos estaremos comunicando contigo mientras confirmamos tu pago.
         </p>
-        <p className="text-sm text-gray-400">Redirigiendo al inicio...</p>
+        <button 
+          onClick={() => navigate('/')}
+          className="bg-black text-white px-8 py-3 text-sm font-bold uppercase tracking-widest hover:bg-gray-800 transition-colors"
+        >
+          Volver al Inicio
+        </button>
       </div>
     );
   }
@@ -220,6 +231,73 @@ export default function Checkout() {
                     />
                   </div>
                 </div>
+              </div>
+
+              {/* Gift Option */}
+              <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mb-6">
+                <div className="flex items-center gap-3 mb-4">
+                  <input 
+                    type="checkbox" 
+                    id="isGift"
+                    name="isGift"
+                    checked={formData.isGift}
+                    onChange={handleInputChange}
+                    className="w-5 h-5 accent-black cursor-pointer"
+                  />
+                  <label htmlFor="isGift" className="text-lg font-bold cursor-pointer select-none">
+                    ¿Es un regalo?
+                  </label>
+                </div>
+
+                {formData.isGift && (
+                  <motion.div 
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                    className="space-y-4 pt-2 border-t border-gray-100"
+                  >
+                    <p className="text-sm text-gray-500 italic">
+                      Agrega una dedicatoria personalizada y los datos de la persona que recibirá el regalo.
+                    </p>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-xs font-bold uppercase text-gray-500 mb-1">Nombre del Destinatario</label>
+                        <input 
+                          type="text" 
+                          name="recipientName"
+                          required={formData.isGift}
+                          value={formData.recipientName}
+                          onChange={handleInputChange}
+                          className="w-full border border-gray-300 p-3 rounded-lg focus:outline-none focus:border-black transition-colors"
+                          placeholder="¿Para quién es?"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-bold uppercase text-gray-500 mb-1">Email del Destinatario</label>
+                        <input 
+                          type="email" 
+                          name="recipientEmail"
+                          required={formData.isGift}
+                          value={formData.recipientEmail}
+                          onChange={handleInputChange}
+                          className="w-full border border-gray-300 p-3 rounded-lg focus:outline-none focus:border-black transition-colors"
+                          placeholder="email@destinatario.com"
+                        />
+                      </div>
+                    </div>
+                    <div>
+                      <label className="block text-xs font-bold uppercase text-gray-500 mb-1">Dedicatoria / Mensaje</label>
+                      <textarea 
+                        name="giftMessage"
+                        required={formData.isGift}
+                        value={formData.giftMessage}
+                        onChange={handleInputChange}
+                        rows={4}
+                        className="w-full border border-gray-300 p-3 rounded-lg focus:outline-none focus:border-black transition-colors resize-none"
+                        placeholder="Escribe un mensaje especial..."
+                      />
+                    </div>
+                  </motion.div>
+                )}
               </div>
 
               {/* Payment Info */}
@@ -368,7 +446,13 @@ export default function Checkout() {
                         {item.selectedSize && <span>Talla: {item.selectedSize}</span>}
                       </p>
                       <p className="text-xs text-gray-500 mt-1">Cant: {item.quantity}</p>
-                      <p className="text-sm font-bold mt-1">${(item.price * item.quantity).toFixed(2)}</p>
+                      <p className="text-sm font-bold mt-1">
+                        {item.isSale && item.salePrice ? (
+                          <span className="text-red-500">${(item.salePrice * item.quantity).toFixed(2)}</span>
+                        ) : (
+                          <span>${(item.price * item.quantity).toFixed(2)}</span>
+                        )}
+                      </p>
                     </div>
                   </div>
                 ))}
