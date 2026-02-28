@@ -1,14 +1,17 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { ShoppingBag, Search, Menu, X, User, ChevronDown, ArrowRight } from 'lucide-react';
+import { ShoppingBag, Search, Menu, X, User, ChevronDown, ArrowRight, LogOut, Heart, Settings } from 'lucide-react';
 import { useCart } from '../context/CartContext';
+import { useAuth } from '../context/AuthContext';
 import { motion, AnimatePresence } from 'motion/react';
 import { Link, useNavigate } from 'react-router-dom';
 import { categories, products } from '../data/products';
 
 export default function Navbar() {
   const { cartCount, setIsCartOpen } = useCart();
+  const { user, logout } = useAuth();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isCollectionsOpen, setIsCollectionsOpen] = useState(false);
+  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const searchInputRef = useRef<HTMLInputElement>(null);
@@ -107,7 +110,7 @@ export default function Navbar() {
                 </AnimatePresence>
               </div>
 
-              <a href="/#about" className="text-sm font-medium text-gray-700 hover:text-black transition-colors uppercase tracking-wide">Nosotros</a>
+              <Link to="/about" className="text-sm font-medium text-gray-700 hover:text-black transition-colors uppercase tracking-wide">Nosotros</Link>
             </div>
 
             {/* Icons */}
@@ -118,9 +121,62 @@ export default function Navbar() {
               >
                 <Search size={20} />
               </button>
-              <button className="text-gray-500 hover:text-black transition-colors">
-                <User size={20} />
-              </button>
+              
+              {/* User Menu */}
+              <div 
+                className="relative"
+                onMouseEnter={() => setIsUserMenuOpen(true)}
+                onMouseLeave={() => setIsUserMenuOpen(false)}
+              >
+                <Link 
+                  to={user ? "/profile" : "/login"}
+                  className="text-gray-500 hover:text-black transition-colors block py-2"
+                >
+                  <User size={20} />
+                </Link>
+
+                <AnimatePresence>
+                  {isUserMenuOpen && user && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: 10 }}
+                      transition={{ duration: 0.2 }}
+                      className="absolute right-0 mt-0 w-48 bg-white border border-gray-100 shadow-lg py-2 z-50 rounded-lg"
+                    >
+                      <div className="px-4 py-2 border-b border-gray-100">
+                        <p className="text-sm font-bold text-gray-900 truncate">{user.name}</p>
+                        <p className="text-xs text-gray-500 truncate">{user.email}</p>
+                      </div>
+                      <Link 
+                        to="/profile?tab=profile" 
+                        className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-black"
+                      >
+                        <User size={16} /> Mi Perfil
+                      </Link>
+                      <Link 
+                        to="/profile?tab=orders" 
+                        className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-black"
+                      >
+                        <ShoppingBag size={16} /> Mis Pedidos
+                      </Link>
+                      <Link 
+                        to="/profile?tab=favorites" 
+                        className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-black"
+                      >
+                        <Heart size={16} /> Favoritos
+                      </Link>
+                      <button 
+                        onClick={logout}
+                        className="w-full flex items-center gap-2 px-4 py-2 text-sm text-red-600 hover:bg-red-50 text-left"
+                      >
+                        <LogOut size={16} /> Cerrar Sesión
+                      </button>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+
               <button
                 onClick={() => setIsCartOpen(true)}
                 className="text-gray-500 hover:text-black transition-colors relative"
@@ -165,7 +221,7 @@ export default function Navbar() {
                   </div>
                 </div>
 
-                <a href="/#about" onClick={() => setIsMobileMenuOpen(false)} className="block px-3 py-2 text-base font-medium text-gray-700 hover:text-black hover:bg-gray-50">NOSOTROS</a>
+                <Link to="/about" onClick={() => setIsMobileMenuOpen(false)} className="block px-3 py-2 text-base font-medium text-gray-700 hover:text-black hover:bg-gray-50">NOSOTROS</Link>
               </div>
             </motion.div>
           )}

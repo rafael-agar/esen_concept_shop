@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { products, Product } from '../data/products';
 import { useCart } from '../context/CartContext';
-import { Star, Minus, Plus, ChevronDown, ChevronUp, X } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
+import { Star, Minus, Plus, ChevronDown, ChevronUp, X, Heart } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import ProductCard from '../components/ProductCard';
 
@@ -11,17 +12,22 @@ export default function ProductDetail() {
   const navigate = useNavigate();
   const product = products.find(p => p.id === Number(id));
   const { addToCart } = useCart();
+  const { toggleFavorite, isFavorite, isAuthenticated } = useAuth();
 
   const [selectedColor, setSelectedColor] = useState('red');
   const [selectedSize, setSelectedSize] = useState('Medium');
   const [quantity, setQuantity] = useState(1);
   const [openSection, setOpenSection] = useState<string | null>(null);
   const [recentlyViewed, setRecentlyViewed] = useState<Product[]>([]);
+  const [selectedImage, setSelectedImage] = useState<string>('');
 
   // Scroll to top when product changes
   useEffect(() => {
     window.scrollTo(0, 0);
-  }, [id]);
+    if (product) {
+      setSelectedImage(product.image);
+    }
+  }, [id, product]);
 
   // Handle Recently Viewed
   useEffect(() => {
@@ -68,8 +74,15 @@ export default function ProductDetail() {
   };
 
   const handleAddToCart = () => {
-    // In a real app, we would pass color and size to the cart
-    addToCart(product);
+    addToCart(product, selectedColor, selectedSize);
+  };
+
+  const handleFavoriteClick = () => {
+    if (isAuthenticated) {
+      toggleFavorite(product.id);
+    } else {
+      alert('Inicia sesión para agregar a favoritos');
+    }
   };
 
   return (
@@ -85,23 +98,54 @@ export default function ProductDetail() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-12 mb-20">
         {/* Image Gallery */}
         <div className="space-y-4">
-          <div className="aspect-[3/4] bg-gray-100 overflow-hidden">
-            <img 
-              src={product.image} 
+          <div className="aspect-[3/4] bg-gray-100 overflow-hidden relative">
+            <motion.img 
+              key={selectedImage}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.3 }}
+              src={selectedImage || product.image} 
               alt={product.name} 
               className="w-full h-full object-cover"
             />
+            {/* Favorite Button on Main Image */}
+            <button
+              onClick={handleFavoriteClick}
+              className="absolute top-4 right-4 z-10 p-3 bg-white/80 backdrop-blur-sm rounded-full hover:bg-white transition-colors shadow-sm"
+            >
+              <Heart 
+                size={24} 
+                className={isFavorite(product.id) ? "fill-red-500 text-red-500" : "text-gray-600"} 
+              />
+            </button>
           </div>
-          <div className="grid grid-cols-4 gap-4">
-            {[1, 2, 3, 4].map((i) => (
-              <div key={i} className="aspect-square bg-gray-100 overflow-hidden cursor-pointer hover:opacity-80 transition-opacity">
-                <img 
-                  src={product.image} 
-                  alt={`${product.name} view ${i}`} 
-                  className="w-full h-full object-cover"
-                />
-              </div>
-            ))}
+          <div className="grid grid-cols-5 gap-4">
+            {product.images && product.images.length > 0 ? (
+              product.images.map((img, index) => (
+                <div 
+                  key={index} 
+                  onClick={() => setSelectedImage(img)}
+                  className={`aspect-square bg-gray-100 overflow-hidden cursor-pointer hover:opacity-80 transition-all ${selectedImage === img ? 'ring-2 ring-black' : ''}`}
+                >
+                  <img 
+                    src={img} 
+                    alt={`${product.name} view ${index + 1}`} 
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              ))
+            ) : (
+              // Fallback if no images array (though we added it)
+              [1, 2, 3, 4].map((i) => (
+                <div key={i} className="aspect-square bg-gray-100 overflow-hidden cursor-pointer hover:opacity-80 transition-opacity">
+                  <img 
+                    src={product.image} 
+                    alt={`${product.name} view ${i}`} 
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              ))
+            )}
           </div>
         </div>
 
@@ -184,12 +228,23 @@ export default function ProductDetail() {
             </div>
           </div>
 
-          <button 
-            onClick={handleAddToCart}
-            className="w-full bg-black text-white py-4 text-sm font-bold uppercase tracking-widest hover:bg-gray-800 transition-colors mb-12"
-          >
-            Agregar al Carrito
-          </button>
+          <div className="flex gap-4 mb-12">
+            <button 
+              onClick={handleAddToCart}
+              className="flex-1 bg-black text-white py-4 text-sm font-bold uppercase tracking-widest hover:bg-gray-800 transition-colors"
+            >
+              Agregar al Carrito
+            </button>
+            <button 
+              onClick={handleFavoriteClick}
+              className={`px-6 border border-gray-300 flex items-center justify-center hover:border-black transition-colors ${isFavorite(product.id) ? 'bg-red-50 border-red-200' : ''}`}
+            >
+              <Heart 
+                size={24} 
+                className={isFavorite(product.id) ? "fill-red-500 text-red-500" : "text-gray-600"} 
+              />
+            </button>
+          </div>
 
           {/* Accordions */}
           <div className="border-t border-gray-200">

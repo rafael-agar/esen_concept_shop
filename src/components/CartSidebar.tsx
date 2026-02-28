@@ -2,9 +2,16 @@ import React from 'react';
 import { X, Minus, Plus, Trash2 } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { motion, AnimatePresence } from 'motion/react';
+import { useNavigate } from 'react-router-dom';
 
 export default function CartSidebar() {
-  const { cart, removeFromCart, isCartOpen, setIsCartOpen, cartTotal, addToCart } = useCart();
+  const { cart, removeFromCart, isCartOpen, setIsCartOpen, cartTotal, addToCart, decreaseQuantity, shippingCost, finalTotal } = useCart();
+  const navigate = useNavigate();
+
+  const handleCheckout = () => {
+    setIsCartOpen(false);
+    navigate('/checkout');
+  };
 
   // Helper to decrease quantity (not implemented in context for brevity, but can mock here)
   // For now, we'll just use remove. Ideally context should have updateQuantity.
@@ -63,23 +70,30 @@ export default function CartSidebar() {
                     <div className="flex-1 flex flex-col justify-between">
                       <div>
                         <h3 className="text-sm font-medium text-gray-900">{item.name}</h3>
+                        <p className="text-xs text-gray-500 mt-1">
+                          {item.selectedColor && <span className="mr-2">Color: {item.selectedColor}</span>}
+                          {item.selectedSize && <span>Talla: {item.selectedSize}</span>}
+                        </p>
                         <p className="text-sm text-gray-500 mt-1">${item.price.toFixed(2)}</p>
                       </div>
                       <div className="flex items-center justify-between">
                         <div className="flex items-center border border-gray-200">
-                          <button className="p-1 hover:bg-gray-50 text-gray-500">
+                          <button 
+                            onClick={() => decreaseQuantity(item.cartId)}
+                            className="p-1 hover:bg-gray-50 text-gray-500"
+                          >
                             <Minus size={14} />
                           </button>
                           <span className="px-2 text-xs font-medium">{item.quantity}</span>
                           <button 
-                            onClick={() => addToCart(item)}
+                            onClick={() => addToCart(item, item.selectedColor, item.selectedSize)}
                             className="p-1 hover:bg-gray-50 text-gray-500"
                           >
                             <Plus size={14} />
                           </button>
                         </div>
                         <button
-                          onClick={() => removeFromCart(item.id)}
+                          onClick={() => removeFromCart(item.cartId)}
                           className="text-gray-400 hover:text-red-500 transition-colors"
                         >
                           <Trash2 size={16} />
@@ -99,13 +113,18 @@ export default function CartSidebar() {
                 </div>
                 <div className="flex justify-between items-center text-sm">
                   <span className="text-gray-500">Envío</span>
-                  <span className="font-medium">Calculado al pagar</span>
+                  <span className={`font-medium ${shippingCost === 0 ? 'text-green-600' : ''}`}>
+                    {shippingCost === 0 ? 'Gratis' : `$${shippingCost.toFixed(2)}`}
+                  </span>
                 </div>
                 <div className="border-t border-gray-200 pt-4 flex justify-between items-center">
                   <span className="text-lg font-serif font-bold">Total</span>
-                  <span className="text-lg font-bold">${cartTotal.toFixed(2)}</span>
+                  <span className="text-lg font-bold">${finalTotal.toFixed(2)}</span>
                 </div>
-                <button className="w-full bg-black text-white py-4 text-sm font-bold uppercase tracking-widest hover:bg-gray-800 transition-colors">
+                <button 
+                  onClick={handleCheckout}
+                  className="w-full bg-black text-white py-4 text-sm font-bold uppercase tracking-widest hover:bg-gray-800 transition-colors"
+                >
                   Pagar Ahora
                 </button>
               </div>

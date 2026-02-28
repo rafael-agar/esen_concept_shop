@@ -102,18 +102,23 @@ export default function Home() {
           <div className="order-1 md:order-2 md:pl-12">
             <h2 className="text-3xl font-serif font-bold mb-6">Sobre Nosotros</h2>
             <p className="text-gray-600 mb-6 leading-relaxed">
-              En Esen Concept, creemos que la moda es una forma de expresión personal. 
-              Nuestra misión es empoderar a las mujeres a través de prendas que combinan 
-              elegancia atemporal con tendencias contemporáneas.
+              ESEN CONCEPT nace desde un proceso de transformación personal, de volver a la raíz, de aprender a sostenerme, de sanar, de confiar.
+              Es recordar quién eras antes del ruido, antes del miedo, antes de convertirte en una versión que no se sentía propia.
             </p>
-            <p className="text-gray-600 mb-8 leading-relaxed">
-              Cada pieza es seleccionada cuidadosamente pensando en la calidad, 
-              el confort y el estilo. Nos inspiramos en la mujer moderna: fuerte, 
-              segura y auténtica.
+            <p className="text-gray-600 mb-6 leading-relaxed">
+              Nuestra primera cápsula, RAÍZ, habla de estabilidad. De identidad. De reconstrucción silenciosa.
+              Deseo que cada prenda que uses recuerdes lo valiosa, fuerte, poderosa que eres y todo lo que has superado.
             </p>
-            <a href="#" className="text-black font-bold uppercase tracking-widest border-b border-black pb-1 hover:text-gray-600 hover:border-gray-600 transition-colors">
+            <p className="text-gray-600 mb-8 leading-relaxed font-medium italic">
+              ESEN es un recordatorio de tu ESENcia.<br/>
+              Porque cuando una mujer vuelve a su raíz,<br/>
+              no retrocede.<br/>
+              Se alinea.<br/>
+              Y desde ahí, florece.
+            </p>
+            <Link to="/about" className="text-black font-bold uppercase tracking-widest border-b border-black pb-1 hover:text-gray-600 hover:border-gray-600 transition-colors">
               Leer Más
-            </a>
+            </Link>
           </div>
         </div>
       </section>
