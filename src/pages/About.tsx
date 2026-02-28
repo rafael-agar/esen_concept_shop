@@ -50,7 +50,7 @@ export default function About() {
           <div className="md:w-1/2">
             <div className="aspect-[4/5] overflow-hidden rounded-sm bg-gray-200">
               <img 
-                src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=1000&auto=format&fit=crop" 
+                src="https://esenconcept.netlify.app/esen02.jpg" 
                 alt="Mujer serena" 
                 className="w-full h-full object-cover hover:scale-105 transition-transform duration-1000 ease-out"
               />
@@ -109,7 +109,7 @@ export default function About() {
           <div className="md:w-1/2">
             <div className="aspect-[4/5] overflow-hidden rounded-sm bg-gray-200">
               <img 
-                src="https://images.unsplash.com/photo-1506619216599-9d16d0903dfd?q=80&w=1000&auto=format&fit=crop" 
+                src="https://esenconcept.netlify.app/esen04.jpg" 
                 alt="Textura natural y orgánica" 
                 className="w-full h-full object-cover hover:scale-105 transition-transform duration-1000 ease-out"
               />
