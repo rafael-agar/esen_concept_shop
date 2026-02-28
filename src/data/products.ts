@@ -132,22 +132,22 @@ export const products: Product[] = [
 export const categories = [
   {
     id: 1,
-    name: "Set",
+    name: "Sets",
     image: "https://images.unsplash.com/photo-1595777457583-95e059d581b8?q=80&w=1000&auto=format&fit=crop"
   },
   {
     id: 2,
-    name: "Pantalón",
+    name: "Pantalones",
     image: "https://images.unsplash.com/photo-1611591437281-460bfbe1220a?q=80&w=1000&auto=format&fit=crop"
   },
   {
     id: 3,
-    name: "Blusa",
+    name: "Blusas",
     image: "https://images.unsplash.com/photo-1560343090-f0409e92791a?q=80&w=1000&auto=format&fit=crop"
   },
   {
     id: 4,
-    name: "Accesorio",
+    name: "Accesorios",
     image: "https://images.unsplash.com/photo-1584917865442-de89df76afd3?q=80&w=1000&auto=format&fit=crop"
   }
 ];
