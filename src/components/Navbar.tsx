@@ -58,7 +58,7 @@ export default function Navbar() {
             <div className="flex-1 flex items-center justify-center md:justify-start md:flex-none md:w-auto">
               <Link to="/" className="text-2xl font-serif font-bold tracking-wider">
                 <img 
-                  src="https://esenconcept.netlify.app/" 
+                  src="https://esenconcept.netlify.app/logo.png" 
                   alt="ESEN CONCEPT" 
                   className="h-8 w-auto object-contain"
                   onError={(e) => {
@@ -66,7 +66,6 @@ export default function Navbar() {
                     e.currentTarget.nextElementSibling?.classList.remove('hidden');
                   }}
                 />
-                <span className="hidden">ESEN CONCEPT</span>
               </Link>
             </div>
 
