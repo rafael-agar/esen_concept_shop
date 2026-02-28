@@ -9,6 +9,7 @@ export default function Shop() {
   const { products } = useProducts();
   const [searchParams, setSearchParams] = useSearchParams();
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [showOnlySale, setShowOnlySale] = useState(false);
   const [priceRange, setPriceRange] = useState<{ min: number; max: number }>({ min: 0, max: 1000 });
   const [sortOption, setSortOption] = useState<string>('default');
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
@@ -16,22 +17,37 @@ export default function Shop() {
   // Sync state with URL params
   useEffect(() => {
     const categoryParam = searchParams.get('category');
-    const searchParam = searchParams.get('search');
+    const filterParam = searchParams.get('filter');
     
     if (categoryParam) {
       setSelectedCategory(categoryParam);
     } else {
       setSelectedCategory(null);
     }
+
+    if (filterParam === 'sale') {
+      setShowOnlySale(true);
+    } else {
+      setShowOnlySale(false);
+    }
   }, [searchParams]);
 
   const handleCategoryChange = (category: string | null) => {
     setSelectedCategory(category);
-    if (category) {
-      setSearchParams({ category });
-    } else {
-      setSearchParams({});
-    }
+    const newParams: any = {};
+    if (category) newParams.category = category;
+    if (showOnlySale) newParams.filter = 'sale';
+    setSearchParams(newParams);
+  };
+
+  const handleSaleToggle = () => {
+    const nextSaleState = !showOnlySale;
+    setShowOnlySale(nextSaleState);
+    
+    const newParams: any = {};
+    if (selectedCategory) newParams.category = selectedCategory;
+    if (nextSaleState) newParams.filter = 'sale';
+    setSearchParams(newParams);
   };
 
   const filteredProducts = useMemo(() => {
@@ -52,20 +68,36 @@ export default function Shop() {
       result = result.filter(p => p.category === selectedCategory);
     }
 
+    // Filter by Sale (OFERTA label or has sale price)
+    if (showOnlySale) {
+      result = result.filter(p => p.isSale || (p.salePrice !== undefined && p.salePrice > 0));
+    }
+
     // Filter by Price
-    result = result.filter(p => p.price >= priceRange.min && p.price <= priceRange.max);
+    result = result.filter(p => {
+      const effectivePrice = (p.isSale && p.salePrice) ? p.salePrice : p.price;
+      return effectivePrice >= priceRange.min && effectivePrice <= priceRange.max;
+    });
 
     // Sort
     if (sortOption === 'price-asc') {
-      result.sort((a, b) => a.price - b.price);
+      result.sort((a, b) => {
+        const priceA = (a.isSale && a.salePrice) ? a.salePrice : a.price;
+        const priceB = (b.isSale && b.salePrice) ? b.salePrice : b.price;
+        return priceA - priceB;
+      });
     } else if (sortOption === 'price-desc') {
-      result.sort((a, b) => b.price - a.price);
+      result.sort((a, b) => {
+        const priceA = (a.isSale && a.salePrice) ? a.salePrice : a.price;
+        const priceB = (b.isSale && b.salePrice) ? b.salePrice : b.price;
+        return priceB - priceA;
+      });
     } else if (sortOption === 'newest') {
       result.sort((a, b) => (b.isNew ? 1 : 0) - (a.isNew ? 1 : 0));
     }
 
     return result;
-  }, [selectedCategory, priceRange, sortOption]);
+  }, [products, searchParams, selectedCategory, showOnlySale, priceRange, sortOption]);
 
   return (
     <div className="pt-24 pb-20 px-4 max-w-7xl mx-auto">
@@ -109,6 +141,23 @@ export default function Shop() {
                   </li>
                 ))}
               </ul>
+            </div>
+
+            {/* Special Filters */}
+            <div>
+              <h3 className="font-bold uppercase tracking-widest mb-4 text-sm border-b border-gray-200 pb-2">Ofertas</h3>
+              <div className="flex items-center gap-3">
+                <input 
+                  type="checkbox" 
+                  id="sale-filter"
+                  checked={showOnlySale}
+                  onChange={handleSaleToggle}
+                  className="w-4 h-4 accent-black cursor-pointer"
+                />
+                <label htmlFor="sale-filter" className="text-sm cursor-pointer select-none">
+                  Solo en Rebaja
+                </label>
+              </div>
             </div>
 
             {/* Price Filter */}

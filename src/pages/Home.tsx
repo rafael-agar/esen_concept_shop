@@ -86,9 +86,12 @@ export default function Home() {
           <p className="text-xl mb-10 max-w-2xl mx-auto font-light">
             Hasta un 50% de descuento en artículos seleccionados. Renueva tu guardarropa con estilo.
           </p>
-          <button className="bg-white text-black px-10 py-4 text-sm font-bold uppercase tracking-widest hover:bg-gray-200 transition-colors">
+          <Link 
+            to="/shop?filter=sale"
+            className="inline-block bg-white text-black px-10 py-4 text-sm font-bold uppercase tracking-widest hover:bg-gray-200 transition-colors"
+          >
             Comprar Rebajas
-          </button>
+          </Link>
         </div>
       </section>
 
