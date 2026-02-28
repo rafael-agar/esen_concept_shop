@@ -64,9 +64,9 @@ export default function Home() {
           </div>
           
           <div className="text-center mt-16">
-            <a href="/shop" className="inline-block border border-black px-8 py-3 text-sm font-bold uppercase tracking-widest hover:bg-black hover:text-white transition-colors">
+            <Link to="/shop" className="inline-block border border-black px-8 py-3 text-sm font-bold uppercase tracking-widest hover:bg-black hover:text-white transition-colors">
               Ver Todo
-            </a>
+            </Link>
           </div>
         </div>
       </section>
