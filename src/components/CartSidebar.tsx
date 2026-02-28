@@ -1,21 +1,36 @@
-import React from 'react';
-import { X, Minus, Plus, Trash2 } from 'lucide-react';
+import React, { useState } from 'react';
+import { X, Minus, Plus, Trash2, Tag } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { motion, AnimatePresence } from 'motion/react';
 import { useNavigate } from 'react-router-dom';
 
 export default function CartSidebar() {
-  const { cart, removeFromCart, isCartOpen, setIsCartOpen, cartTotal, addToCart, decreaseQuantity, shippingCost, finalTotal } = useCart();
+  const { 
+    cart, removeFromCart, isCartOpen, setIsCartOpen, cartTotal, addToCart, decreaseQuantity, 
+    shippingCost, finalTotal, applyCoupon, removeCoupon, appliedCoupon, discountAmount 
+  } = useCart();
   const navigate = useNavigate();
+  const [couponInput, setCouponInput] = useState('');
+  const [couponError, setCouponError] = useState('');
 
   const handleCheckout = () => {
     setIsCartOpen(false);
     navigate('/checkout');
   };
 
-  // Helper to decrease quantity (not implemented in context for brevity, but can mock here)
-  // For now, we'll just use remove. Ideally context should have updateQuantity.
-  
+  const handleApplyCoupon = (e: React.FormEvent) => {
+    e.preventDefault();
+    setCouponError('');
+    if (couponInput.trim()) {
+      const success = applyCoupon(couponInput.trim());
+      if (!success) {
+        setCouponError('Cupón inválido o inactivo');
+      } else {
+        setCouponInput('');
+      }
+    }
+  };
+
   return (
     <AnimatePresence>
       {isCartOpen && (
@@ -63,7 +78,7 @@ export default function CartSidebar() {
                 </div>
               ) : (
                 cart.map((item) => (
-                  <div key={item.id} className="flex gap-4">
+                  <div key={item.cartId} className="flex gap-4">
                     <div className="w-20 h-24 bg-gray-100 flex-shrink-0 overflow-hidden">
                       <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
                     </div>
@@ -107,10 +122,51 @@ export default function CartSidebar() {
 
             {cart.length > 0 && (
               <div className="border-t border-gray-100 p-6 space-y-4 bg-gray-50">
+                
+                {/* Coupon Section */}
+                <div className="mb-4">
+                  {appliedCoupon ? (
+                    <div className="flex items-center justify-between bg-green-50 text-green-800 p-3 rounded-md border border-green-200">
+                      <div className="flex items-center gap-2">
+                        <Tag size={16} />
+                        <span className="text-sm font-medium">{appliedCoupon.code} (-{appliedCoupon.discountPercentage}%)</span>
+                      </div>
+                      <button onClick={removeCoupon} className="text-green-800 hover:text-green-900">
+                        <X size={16} />
+                      </button>
+                    </div>
+                  ) : (
+                    <form onSubmit={handleApplyCoupon} className="flex gap-2">
+                      <input
+                        type="text"
+                        value={couponInput}
+                        onChange={(e) => setCouponInput(e.target.value)}
+                        placeholder="Código de descuento"
+                        className="flex-1 border border-gray-300 p-2 text-sm focus:outline-none focus:border-black rounded-sm"
+                      />
+                      <button 
+                        type="submit"
+                        className="bg-black text-white px-4 py-2 text-sm font-bold uppercase tracking-widest hover:bg-gray-800 transition-colors rounded-sm"
+                      >
+                        Aplicar
+                      </button>
+                    </form>
+                  )}
+                  {couponError && <p className="text-red-500 text-xs mt-1">{couponError}</p>}
+                </div>
+
                 <div className="flex justify-between items-center text-sm">
                   <span className="text-gray-500">Subtotal</span>
                   <span className="font-medium">${cartTotal.toFixed(2)}</span>
                 </div>
+                
+                {appliedCoupon && (
+                  <div className="flex justify-between items-center text-sm text-green-600">
+                    <span>Descuento ({appliedCoupon.discountPercentage}%)</span>
+                    <span className="font-medium">-${discountAmount.toFixed(2)}</span>
+                  </div>
+                )}
+
                 <div className="flex justify-between items-center text-sm">
                   <span className="text-gray-500">Envío</span>
                   <span className={`font-medium ${shippingCost === 0 ? 'text-green-600' : ''}`}>

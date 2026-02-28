@@ -12,6 +12,7 @@ import Checkout from './pages/Checkout';
 import Login from './pages/Login';
 import Profile from './pages/Profile';
 import About from './pages/About';
+import Admin from './pages/Admin';
 
 function AppContent() {
   return (
@@ -29,6 +30,7 @@ function AppContent() {
             <Route path="/login" element={<Login />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/about" element={<About />} />
+            <Route path="/my-admin" element={<Admin />} />
           </Routes>
         </main>
 

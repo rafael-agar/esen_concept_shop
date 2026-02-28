@@ -2,17 +2,19 @@ import React, { useState, useEffect } from 'react';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { CheckCircle, CreditCard, Truck, MapPin, Mail, User, ShieldCheck, Smartphone, Banknote } from 'lucide-react';
+import { CheckCircle, CreditCard, Truck, MapPin, Mail, User, ShieldCheck, Smartphone, Banknote, Tag, X } from 'lucide-react';
 import { motion } from 'motion/react';
 
 export default function Checkout() {
-  const { cart, cartTotal, clearCart, shippingCost, finalTotal } = useCart();
+  const { cart, cartTotal, clearCart, shippingCost, finalTotal, appliedCoupon, discountAmount, applyCoupon, removeCoupon } = useCart();
   const { user, isAuthenticated, addOrder } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const [isProcessing, setIsProcessing] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState<'pago-movil' | 'transferencia'>('pago-movil');
+  const [couponInput, setCouponInput] = useState('');
+  const [couponError, setCouponError] = useState('');
 
   const [formData, setFormData] = useState({
     email: '',
@@ -48,6 +50,19 @@ export default function Checkout() {
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleApplyCoupon = (e: React.FormEvent) => {
+    e.preventDefault();
+    setCouponError('');
+    if (couponInput.trim()) {
+      const success = applyCoupon(couponInput.trim());
+      if (!success) {
+        setCouponError('Cupón inválido o inactivo');
+      } else {
+        setCouponInput('');
+      }
+    }
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -359,11 +374,52 @@ export default function Checkout() {
                 ))}
               </div>
 
+              {/* Coupon Section */}
+              <div className="mb-6">
+                {appliedCoupon ? (
+                  <div className="flex items-center justify-between bg-green-50 text-green-800 p-3 rounded-md border border-green-200">
+                    <div className="flex items-center gap-2">
+                      <Tag size={16} />
+                      <span className="text-sm font-medium">{appliedCoupon.code} (-{appliedCoupon.discountPercentage}%)</span>
+                    </div>
+                    <button onClick={removeCoupon} className="text-green-800 hover:text-green-900">
+                      <X size={16} />
+                    </button>
+                  </div>
+                ) : (
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      value={couponInput}
+                      onChange={(e) => setCouponInput(e.target.value)}
+                      placeholder="Código de descuento"
+                      className="flex-1 border border-gray-300 p-2 text-sm focus:outline-none focus:border-black rounded-sm"
+                    />
+                    <button 
+                      type="button"
+                      onClick={handleApplyCoupon}
+                      className="bg-black text-white px-4 py-2 text-sm font-bold uppercase tracking-widest hover:bg-gray-800 transition-colors rounded-sm"
+                    >
+                      Aplicar
+                    </button>
+                  </div>
+                )}
+                {couponError && <p className="text-red-500 text-xs mt-1">{couponError}</p>}
+              </div>
+
               <div className="space-y-3 border-t border-gray-100 pt-4 mb-6">
                 <div className="flex justify-between text-sm">
                   <span className="text-gray-600">Subtotal</span>
                   <span className="font-medium">${cartTotal.toFixed(2)}</span>
                 </div>
+                
+                {appliedCoupon && (
+                  <div className="flex justify-between text-sm text-green-600">
+                    <span>Descuento ({appliedCoupon.discountPercentage}%)</span>
+                    <span className="font-medium">-${discountAmount.toFixed(2)}</span>
+                  </div>
+                )}
+
                 <div className="flex justify-between text-sm">
                   <span className="text-gray-600">Envío</span>
                   <span className={`font-medium ${shippingCost === 0 ? 'text-green-600' : ''}`}>
